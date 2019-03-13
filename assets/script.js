@@ -10,7 +10,7 @@ firebase.initializeApp(config);
 var db = firebase.database();
 
 var username = "";
-var isPlayer;
+var isPlayer = false;
 var dbPlayer;
 
 
@@ -30,11 +30,17 @@ $(document).ready(function() {
 		joinAs('player');
 	});
 
-	function joinAs(role) {
+	$('.modal form').on('submit', function(event) {
+		event.preventDefault();
+		joinAs('player');
+	})
+
+	function joinAs(role, nameOverride) {
 		isPlayer = (role === 'player');
 
 		username = $('#name-field').val().trim();
 		if (username === "") username = "Anonymous";
+		if (nameOverride) username = nameOverride;
 
 		$('#signin').modal('hide');
 
@@ -62,24 +68,32 @@ $(document).ready(function() {
 
 	$('.game-controls button').on('click', function() {
 		play($(this).attr("data-play"));
-		console.log(this);
 	})
 
 	function play(p) {
+		console.log('playing…', p, isPlayer);
 		if (!isPlayer) return;
-
-		console.log('playing…', p)
 
 		dbPlayer.set({
 			name: username,
 			play: p
 		});
+
+		$('#game-icon-me').attr('src', 'assets/img/play-'+p+'.png');
+		$('#game-play-me').text(p);
 	}
+
+
+	db.ref('/players/').on('value', snap => {
+		var players = snap.val();
+		console.log(players);
+	});
 
 
 
 
 
 	// $('#signin').modal();
+	joinAs('player', 'Josh');
 
 });
