@@ -11,12 +11,98 @@
 </head>
 <body>
 
+	<div class="modal fade" id="signin" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Welcome to Rock Paper Scissors</h5>
+				</div>
+				<div class="modal-body">
+					<form>
+						<input type="text" id="name-field" class="form-control" placeholder="Enter your name...">
+					</form>
+				</div>
+				<div class="modal-footer">
+					<span class="text-muted mr-3">4 spectators</span>
+					<button id="btn-spectate" class="btn btn-secondary">Spectate</button>
+					<button id="btn-join" class="btn btn-primary">Join Game</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
 	<div class="container">
-		
+
+		<div class="row my-2 my-lg-5">
+			<div class="col d-flex justify-content-end align-items-baseline">
+				
+				<h4 class="mr-auto d-block d-sm-none">✊✋✌️</h4>
+				<h4 class="mr-auto d-none d-sm-block">Rock Paper Scissors</h4>
+
+				<span id="name-display"></span>
+
+				<button id="btn-signout" class="btn btn-sm btn-outline-secondary ml-3">Sign Out</button>
+				
+			</div>
+		</div>
+
+
+
+		<div class="row">
+
+			<div class="col-12 col-md-8">
+				
+				<div id="game">
+					
+					<div class="row game-plays">
+						<div class="col">
+							<img src="assets/img/play-rock.png" id="game-img1">
+							<p id="game-play1">Rock</p>
+						</div>
+						<div class="col">
+							<img src="assets/img/play-paper.png" id="game-img2">
+							<p id="game-play2">Paper</p>
+						</div>
+					</div>
+
+					<div class="row game-output">
+						<div class="col">
+							<p id="game-status">Josh wins!</p>
+							<img src="assets/img/result-win.png">
+						</div>
+					</div>
+
+					<div class="row game-controls mt-3">
+						<div class="col">
+							<div class="d-flex mx-2">
+								<button type="button" class="btn btn-primary">Rock</button>
+								<button type="button" class="btn btn-primary">Paper</button>
+								<button type="button" class="btn btn-primary">Scissors</button>
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+
+
+
+			<div class="col-12 col-md-4">
+				
+
+
+			</div>
+			
+		</div>
+
 	</div>
 
 
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 	<script src="https://www.gstatic.com/firebasejs/5.8.6/firebase.js"></script>
 	<script src="assets/script.js"></script>
 

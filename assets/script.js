@@ -9,10 +9,39 @@ var config = {
 firebase.initializeApp(config);
 var db = firebase.database();
 
+var username = "";
+
 
 
 $(document).ready(function() {
 
-	
+
+	$('#btn-spectate').on('click', function() {
+		joinAs('spectator');
+	});
+
+	$('#btn-join').on('click', function() {
+		joinAs('player');
+	});
+
+	function joinAs(role) {
+		username = $('#name-field').val().trim();
+		$('#signin').modal('hide');
+
+		if (username === "") username = "Anonymous";
+
+		if (role === 'player') {
+			$('#name-display').text("Welcome, " + username);
+		} else {
+			$('#name-display').text("Spectating as " + username);
+		}
+
+	}
+
+
+
+
+
+	// $('#signin').modal();
 
 });

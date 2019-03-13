@@ -1,0 +1,27 @@
+#game {
+	background: #f1f4f7;
+	border-radius: 4px;
+	padding: 1rem 0;
+}
+
+#game p {
+	text-align: center;
+	font-size: 1.5em;
+}
+
+#game img {
+	display: block;
+	width: 50%;
+	height: auto;
+	margin: 0 auto;
+}
+
+#game .game-output img {
+	width: 10%;
+}
+
+#game .game-controls button {
+	flex: 1 1 auto;
+	width: 33%;
+	margin: 0 0.5rem;
+}
