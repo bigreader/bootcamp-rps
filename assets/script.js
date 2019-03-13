@@ -24,6 +24,10 @@ $(document).ready(function() {
 		joinAs('player');
 	});
 
+	$('#btn-signout').on('click', function() {
+		$('#signin').modal();
+	})
+
 	function joinAs(role) {
 		username = $('#name-field').val().trim();
 		$('#signin').modal('hide');
@@ -32,10 +36,11 @@ $(document).ready(function() {
 
 		if (role === 'player') {
 			$('#name-display').text("Welcome, " + username);
+			$('#game').removeClass('spectator');
 		} else {
 			$('#name-display').text("Spectating as " + username);
+			$('#game').addClass('spectator');
 		}
-
 	}
 
 
