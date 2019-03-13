@@ -23,7 +23,7 @@
 					</form>
 				</div>
 				<div class="modal-footer">
-					<span class="text-muted mr-3">4 spectators</span>
+					<span id="spec-count" class="text-muted mr-3">4 spectators</span>
 					<button id="btn-spectate" class="btn btn-secondary">Spectate</button>
 					<button id="btn-join" class="btn btn-primary">Join Game</button>
 				</div>
@@ -76,9 +76,9 @@
 					<div class="row game-controls mt-3 player-only">
 						<div class="col">
 							<div class="d-flex mx-2">
-								<button type="button" class="btn btn-primary">Rock</button>
-								<button type="button" class="btn btn-primary">Paper</button>
-								<button type="button" class="btn btn-primary">Scissors</button>
+								<button type="button" class="btn btn-primary" data-play="r">Rock</button>
+								<button type="button" class="btn btn-primary" data-play="p">Paper</button>
+								<button type="button" class="btn btn-primary" data-play="s">Scissors</button>
 							</div>
 						</div>
 					</div>

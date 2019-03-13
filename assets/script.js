@@ -10,10 +10,16 @@ firebase.initializeApp(config);
 var db = firebase.database();
 
 var username = "";
-
+var isPlayer;
+var dbPlayer;
 
 
 $(document).ready(function() {
+
+	$('#btn-signout').on('click', function() {
+		if (dbPlayer) dbPlayer.remove();
+		$('#signin').modal();
+	});
 
 
 	$('#btn-spectate').on('click', function() {
@@ -24,23 +30,50 @@ $(document).ready(function() {
 		joinAs('player');
 	});
 
-	$('#btn-signout').on('click', function() {
-		$('#signin').modal();
-	})
-
 	function joinAs(role) {
-		username = $('#name-field').val().trim();
-		$('#signin').modal('hide');
+		isPlayer = (role === 'player');
 
+		username = $('#name-field').val().trim();
 		if (username === "") username = "Anonymous";
 
-		if (role === 'player') {
+		$('#signin').modal('hide');
+
+
+		if (isPlayer) {
 			$('#name-display').text("Welcome, " + username);
 			$('#game').removeClass('spectator');
+
+			dbPlayer = db.ref('/players/').push({
+				name: username,
+				play: ""
+			});
+			dbPlayer.onDisconnect().remove();
 		} else {
 			$('#name-display').text("Spectating as " + username);
 			$('#game').addClass('spectator');
+
+			dbPlayer = db.ref('/spectators/').push({
+				name: username
+			});
+			dbPlayer.onDisconnect().remove();
 		}
+	}
+
+
+	$('.game-controls button').on('click', function() {
+		play($(this).attr("data-play"));
+		console.log(this);
+	})
+
+	function play(p) {
+		if (!isPlayer) return;
+
+		console.log('playing…', p)
+
+		dbPlayer.set({
+			name: username,
+			play: p
+		});
 	}
 
 
