@@ -116,7 +116,7 @@ $(document).ready(function() {
 	db.ref('players').on('child_added', snap => {
 		if (snap.key !== playerSlot) {
 			dbOpponent = snap.ref;
-			$('#game-status').text(snap.val().name + ' joined the game.');
+			status(snap.val().name + ' joined the game.', 'join');
 		} else {
 			dbPlayer = snap.ref;
 		}
@@ -130,7 +130,7 @@ $(document).ready(function() {
 	db.ref('players').on('child_removed', snap => {
 		if (snap.key !== playerSlot) {
 			dbOpponent = null;
-			$('#game-status').text(snap.val().name + ' left the game.');
+			status(snap.val().name + ' left the game.', 'join');
 		} else {
 			dbPlayer = null;
 			startSignIn();
@@ -151,6 +151,8 @@ $(document).ready(function() {
 		var element = $('#game-name-' + side);
 		if (!ref) {
 			element.text("—");
+			$('#game-icon-' + side).attr('src', 'assets/img/play-absent.png');
+			$('#game-play-' + side).text('');
 			return;
 		}
 		ref.once('value', data => {
@@ -159,7 +161,13 @@ $(document).ready(function() {
 				return;
 			}
 			element.text(data.val().name);
+
 		});
+	}
+
+	function status(str, icon) {
+		$('#game-status').text(str);
+		$('#game-result-icon').attr('src', 'assets/img/result-'+icon+'.png');
 	}
 
 
@@ -189,15 +197,15 @@ $(document).ready(function() {
 		$('#game-icon-me').attr('src', 'assets/img/play-'+playerPlay+'.png');
 		$('#game-play-me').text(pretty(playerPlay));
 
-		if (!isPlayer || (playerPlay && opponentPlay)) {
+		if (!isPlayer || (playerPlay !== '' && opponentPlay !== '')) {
 			$('#game-icon-you').attr('src', 'assets/img/play-'+opponentPlay+'.png');
 			$('#game-play-you').text(pretty(opponentPlay));
 
-			console.log('GAME OVER', playerPlay, opponentPlay);
+			evaluateGame();
 			setTimeout(newGame, 3000);
 
 		} else {
-			if (opponentPlay) {
+			if (opponentPlay !== '') {
 				$('#game-icon-you').attr('src', 'assets/img/play-ready.png');
 				$('#game-play-you').text(pretty('ready'));
 
@@ -219,10 +227,33 @@ $(document).ready(function() {
 		'rock': 'Rock',
 		'paper': 'Paper',
 		'scissors': 'Scissors',
-		'ready': '✔',
-		'thinking': '•••'
+		'ready': '• • •',
+		'thinking': '• • •'
 	};
 
+
+	function evaluateGame() {
+		console.log('GAME OVER', playerPlay, opponentPlay);
+		if (playerPlay === '' || opponentPlay === '') {
+			console.log('ERROR: called evaluateGame() without making both plays', playerPlay, opponentPlay);
+		}
+
+		if (playerPlay === opponentPlay) {
+			status("It's a tie!", 'tie');
+
+		} else if (beatsRules[playerPlay].includes(opponentPlay)) {
+			status('You win!', 'win');
+
+		} else {
+			status('You lose.', 'lose');
+
+		}
+	}
+	const beatsRules = {
+		'rock': ['scissors'],
+		'paper': ['rock'],
+		'scissors': ['paper']
+	}
 
 	function newGame() {
 		if (dbPlayer && dbOpponent) {
