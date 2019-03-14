@@ -21,6 +21,7 @@ var isPlayer = false;
 var playerSlot;
 var dbPlayer;
 var dbOpponent;
+var dbSpectator;
 
 
 $(document).ready(function() {
@@ -31,6 +32,7 @@ $(document).ready(function() {
 
 	function startSignIn() {
 		if (dbPlayer) dbPlayer.remove();
+		if (dbSpectator) dbSpectator.remove();
 
 		updatePlayers();
 
@@ -88,7 +90,7 @@ $(document).ready(function() {
 			});
 
 		} else {
-			dbSpectators.push({
+			dbSpectator = dbSpectators.push({
 				name: username
 			}).onDisconnect().remove();
 
