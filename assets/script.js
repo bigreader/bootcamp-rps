@@ -133,6 +133,7 @@ $(document).ready(function() {
 			$('#game-status').text(snap.val().name + ' left the game.');
 		} else {
 			dbPlayer = null;
+			startSignIn();
 		}
 		console.log("player removed", snap.val(), snap.key);
 
@@ -172,8 +173,6 @@ $(document).ready(function() {
 		dbPlayer.update({
 			play: p
 		});
-
-		
 	}
 
 	db.ref('players').on('child_changed', snap => {
