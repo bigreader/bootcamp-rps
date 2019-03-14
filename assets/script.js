@@ -27,8 +27,11 @@ $(document).ready(function() {
 	});
 
 	function startSignIn() {
-		if (dbPlayer) dbPlayer.remove();
-		if (dbSpectator) dbSpectator.remove();
+		if (dbSpectator) {
+			dbSpectator.remove()
+		} else if (dbPlayer) {
+			dbPlayer.remove();
+		}
 
 		updatePlayers();
 
@@ -88,7 +91,8 @@ $(document).ready(function() {
 		} else {
 			dbSpectator = dbSpectators.push({
 				name: username
-			}).onDisconnect().remove();
+			})
+			dbSpectator.onDisconnect().remove();
 
 			playerSlot = 'one';
 
