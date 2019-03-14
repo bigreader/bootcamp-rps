@@ -12,6 +12,7 @@ var db = firebase.database();
 var username = "";
 var isPlayer = false;
 var dbPlayer;
+var dbOpponent;
 
 
 $(document).ready(function() {
@@ -84,16 +85,16 @@ $(document).ready(function() {
 	}
 
 
-	db.ref('/players/').on('value', snap => {
-		var players = snap.val();
-		console.log(players);
+	db.ref('/players/').on('child_added', snap => {
+		var player = snap.val();
+		console.log("player added", player);
 	});
 
 
 
 
 
-	// $('#signin').modal();
-	joinAs('player', 'Josh');
+	$('#signin').modal();
+	// joinAs('player', 'Josh');
 
 });
