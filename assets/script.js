@@ -88,10 +88,11 @@ $(document).ready(function() {
 			});
 
 		} else {
-			dbPlayer = dbSpectators.push({
+			dbSpectators.push({
 				name: username
-			});
-			dbPlayer.onDisconnect().remove();
+			}).onDisconnect().remove();
+
+			updatePlayers();
 
 			$('#name-display').text('Spectating as ' + username);
 			$('#game').addClass('spectator');
@@ -107,8 +108,10 @@ $(document).ready(function() {
 		if (snap.key !== playerSlot) {
 			dbOpponent = snap.ref;
 			$('#game-status').text(snap.val().name + ' joined the game.');
+		} else {
+			dbPlayer = snap.ref;
 		}
-		console.log("player added", snap.val(), snap.key);
+		console.log("player added", snap.val(), snap.key, playerSlot, dbPlayer, dbOpponent);
 
 		updatePlayers();
 	});
@@ -117,6 +120,8 @@ $(document).ready(function() {
 		if (snap.key !== playerSlot) {
 			dbOpponent = null;
 			$('#game-status').text(snap.val().name + ' left the game.');
+		} else {
+			dbPlayer = null;
 		}
 		console.log("player removed", snap.val(), snap.key);
 
@@ -151,16 +156,31 @@ $(document).ready(function() {
 	});
 
 	function play(p) {
-		console.log('playing…', p, isPlayer);
 		if (!isPlayer) return;
 
 		dbPlayer.update({
 			play: p
 		});
 
-		$('#game-icon-me').attr('src', 'assets/img/play-'+p+'.png');
-		$('#game-play-me').text(pretty[p]);
+		
 	}
+
+	db.ref('players').on('child_changed', snap => {
+		console.log('player changed', snap.val());
+		var p = snap.val().play;
+
+		if (snap.key === playerSlot) {
+			$('#game-icon-me').attr('src', 'assets/img/play-'+p+'.png');
+			$('#game-play-me').text(pretty[p]);
+		} else {
+			$('#game-icon-you').attr('src', 'assets/img/play-'+p+'.png');
+			$('#game-play-you').text(pretty[p]);
+		}
+
+		
+	});
+
+
 
 
 
