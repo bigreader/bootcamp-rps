@@ -31,6 +31,12 @@
 }
 
 
+.wins-count {
+	font-weight: 600;
+	color: #007bff;
+}
+
+
 .chat-message {
 	margin-bottom: 0.5rem;
 }

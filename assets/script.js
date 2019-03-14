@@ -10,6 +10,7 @@ firebase.initializeApp(config);
 var db = firebase.database();
 var dbSpectators = db.ref('spectators');
 var dbChat = db.ref('chat');
+var dbWins = db.ref('wins');
 
 var username = '';
 var isPlayer = false;
@@ -251,6 +252,9 @@ $(document).ready(function() {
 
 		} else if (beatsRules[playerPlay].includes(opponentPlay)) {
 			status('You win!', 'win');
+			dbWins.child(username).transaction(current => {
+				return (current || 0) + 1;
+			})
 
 		} else {
 			status('You lose.', 'lose');
@@ -270,6 +274,20 @@ $(document).ready(function() {
 			gameRunning = true;
 		}
 	}
+
+
+
+	dbWins.orderByKey().on('child_added', snap => {
+		var entry = $('<li>', {id: 'wins-entry-'+snap.key})
+		entry.text('' + snap.key + ': ');
+		entry.append($('<span>', {class: 'wins-count', text: snap.val()}));
+		$('#wins-list').prepend(entry);
+	});
+
+	dbWins.on('child_changed', snap => {
+		var count = $('#wins-entry-'+snap.key).find('span');
+		count.text(snap.val());
+	});
 
 
 
