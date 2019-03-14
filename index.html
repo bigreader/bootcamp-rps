@@ -51,7 +51,7 @@
 
 		<div class="row">
 
-			<div class="col-12 col-md-8">
+			<div class="col-12 col-md-8 mb-3">
 				
 				<div id="game">
 					
@@ -93,7 +93,13 @@
 
 			<div class="col-12 col-md-4">
 				
+				<form id="chat-form" class="form-inline flex-nowrap mb-3">
+					<input type="text" class="form-control mr-2 flex-fill w-25" id="chat-box" placeholder="Send a chat...">
+					<button type="submit" class="btn btn-primary flex-shrink-0">Send</button>
+				</form>
 
+				<ul id="chat-log" class="list-unstyled"></ul>
+				<p id="chat-cleared" class="text-muted small font-italic" style="display: none;">Chat cleared</p>
 
 			</div>
 			

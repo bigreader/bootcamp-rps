@@ -9,6 +9,7 @@ var config = {
 firebase.initializeApp(config);
 var db = firebase.database();
 var dbSpectators = db.ref('spectators');
+var dbChat = db.ref('chat');
 
 var username = '';
 var isPlayer = false;
@@ -18,7 +19,7 @@ var dbOpponent;
 var dbSpectator;
 var playerPlay = '';
 var opponentPlay = '';
-
+var gameRunning = false;
 
 $(document).ready(function() {
 
@@ -182,6 +183,7 @@ $(document).ready(function() {
 
 	function play(p) {
 		if (!isPlayer) return;
+		if (!gameRunning) return;
 
 		dbPlayer.update({
 			play: p
@@ -242,6 +244,8 @@ $(document).ready(function() {
 			console.log('ERROR: called evaluateGame() without making both plays', playerPlay, opponentPlay);
 		}
 
+		gameRunning = false;
+
 		if (playerPlay === opponentPlay) {
 			status("It's a tie!", 'tie');
 
@@ -263,8 +267,50 @@ $(document).ready(function() {
 		if (dbPlayer && dbOpponent) {
 			dbPlayer.update({ play: '' });
 			dbOpponent.update({ play: '' });
+			gameRunning = true;
 		}
 	}
+
+
+
+	dbChat.orderByChild('time').on('child_added', snap => {
+		var message = snap.val();
+		console.log('message', message);
+
+		var item = $('<li class="chat-message">');
+		item.text(message.text);
+
+		var sender = $('<span>')
+		sender.text(message.sender + ': ');
+		sender.addClass('chat-sender');
+
+		item.prepend(sender);
+
+		$('#chat-log').prepend(item);
+	});
+
+	dbChat.on('child_removed', snap => {
+		$('#chat-log').empty();
+		$('#chat-cleared').show();
+	});
+
+	$('#chat-form').on('submit', function(event) {
+		event.preventDefault();
+
+		var text = $('#chat-box').val();
+		$('#chat-box').val('');
+
+		if (text === '/clear') {
+			dbChat.remove();
+			return;
+		}
+
+		dbChat.push({
+			time: Date.now(),
+			sender: username,
+			text: text
+		});
+	});
 
 
 

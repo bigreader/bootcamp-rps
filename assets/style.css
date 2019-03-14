@@ -29,3 +29,13 @@
 	width: 33%;
 	margin: 0 0.5rem;
 }
+
+
+.chat-message {
+	margin-bottom: 0.5rem;
+}
+
+.chat-sender {
+	font-weight: 600;
+	color: #007bff;
+}
