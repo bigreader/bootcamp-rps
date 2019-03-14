@@ -252,9 +252,11 @@ $(document).ready(function() {
 
 		} else if (beatsRules[playerPlay].includes(opponentPlay)) {
 			status('You win!', 'win');
-			dbWins.child(username).transaction(current => {
-				return (current || 0) + 1;
-			})
+			if (isPlayer) {
+				dbWins.child(username).transaction(current => {
+					return (current || 0) + 1;
+				});
+			}
 
 		} else {
 			status('You lose.', 'lose');
@@ -322,6 +324,11 @@ $(document).ready(function() {
 			dbChat.remove();
 			return;
 		}
+		if (text === '/resetwins') {
+			dbWins.remove();
+			$('#wins-list').empty();
+			return;
+		}
 
 		dbChat.push({
 			time: Date.now(),
@@ -329,8 +336,6 @@ $(document).ready(function() {
 			text: text
 		});
 	});
-
-
 
 
 
