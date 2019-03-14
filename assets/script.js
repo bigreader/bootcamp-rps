@@ -92,6 +92,17 @@ $(document).ready(function() {
 				name: username
 			}).onDisconnect().remove();
 
+			playerSlot = 'one';
+
+			db.ref('players').once('child_added', snap => {
+				if (snap.key !== playerSlot) {
+					dbOpponent = snap.ref;
+				} else {
+					dbPlayer = snap.ref;
+				}
+				console.log("ONCE player added", snap.val(), snap.key, playerSlot, dbPlayer, dbOpponent);
+			});
+
 			updatePlayers();
 
 			$('#name-display').text('Spectating as ' + username);
@@ -177,7 +188,6 @@ $(document).ready(function() {
 			$('#game-play-you').text(pretty[p]);
 		}
 
-		
 	});
 
 
