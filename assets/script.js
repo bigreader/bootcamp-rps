@@ -10,8 +10,15 @@ firebase.initializeApp(config);
 var db = firebase.database();
 var dbSpectators = db.ref('spectators');
 
+const pretty = {
+	'rock': 'Rock',
+	'paper': 'Paper',
+	'scissors': 'Scissors'
+};
+
 var username = "";
 var isPlayer = false;
+var playerSlot;
 var dbPlayer;
 var dbOpponent;
 
@@ -24,6 +31,8 @@ $(document).ready(function() {
 
 	function startSignIn() {
 		if (dbPlayer) dbPlayer.remove();
+
+		updatePlayers();
 
 		$('#modal-info-line').removeClass('text-danger').addClass('text-muted');
 		$('#modal-info-line').text('');
@@ -64,8 +73,8 @@ $(document).ready(function() {
 					return;
 				}
 
-				var slot = (data.hasChild('one'))? 'two':'one';
-				dbPlayer = db.ref('players/'+slot)
+				playerSlot = (data.hasChild('one'))? 'two':'one';
+				dbPlayer = db.ref('players/'+playerSlot)
 				dbPlayer.set({
 					name: username,
 					play: ''
@@ -94,9 +103,52 @@ $(document).ready(function() {
 	}
 
 
+	db.ref('players').on('child_added', snap => {
+		if (snap.key !== playerSlot) {
+			dbOpponent = snap.ref;
+			$('#game-status').text(snap.val().name + ' joined the game.');
+		}
+		console.log("player added", snap.val(), snap.key);
+
+		updatePlayers();
+	});
+
+	db.ref('players').on('child_removed', snap => {
+		if (snap.key !== playerSlot) {
+			dbOpponent = null;
+			$('#game-status').text(snap.val().name + ' left the game.');
+		}
+		console.log("player removed", snap.val(), snap.key);
+
+		updatePlayers();
+	});
+
+
+	function updatePlayers() {
+		updateName(dbPlayer, 'me');
+		updateName(dbOpponent, 'you');
+	}
+
+	function updateName(ref, side) {
+		var element = $('#game-name-' + side);
+		if (!ref) {
+			element.text("—");
+			return;
+		}
+		ref.once('value', data => {
+			if (!data.exists()) {
+				element.text("—");
+				return;
+			}
+			element.text(data.val().name);
+		});
+	}
+
+
+
 	$('.game-controls button').on('click', function() {
 		play($(this).attr("data-play"));
-	})
+	});
 
 	function play(p) {
 		console.log('playing…', p, isPlayer);
@@ -107,14 +159,8 @@ $(document).ready(function() {
 		});
 
 		$('#game-icon-me').attr('src', 'assets/img/play-'+p+'.png');
-		$('#game-play-me').text(p);
+		$('#game-play-me').text(pretty[p]);
 	}
-
-
-	db.ref('players').on('child_added', snap => {
-		var player = snap.val();
-		console.log("player added", player, snap.key);
-	});
 
 
 
