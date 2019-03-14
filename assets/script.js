@@ -10,18 +10,14 @@ firebase.initializeApp(config);
 var db = firebase.database();
 var dbSpectators = db.ref('spectators');
 
-const pretty = {
-	'rock': 'Rock',
-	'paper': 'Paper',
-	'scissors': 'Scissors'
-};
-
-var username = "";
+var username = '';
 var isPlayer = false;
 var playerSlot;
 var dbPlayer;
 var dbOpponent;
 var dbSpectator;
+var playerPlay = '';
+var opponentPlay = '';
 
 
 $(document).ready(function() {
@@ -126,6 +122,8 @@ $(document).ready(function() {
 		}
 		console.log("player added", snap.val(), snap.key, playerSlot, dbPlayer, dbOpponent);
 
+		snap.ref.update({ added: true });
+
 		updatePlayers();
 	});
 
@@ -146,6 +144,7 @@ $(document).ready(function() {
 	function updatePlayers() {
 		updateName(dbPlayer, 'me');
 		updateName(dbOpponent, 'you');
+		newGame();
 	}
 
 	function updateName(ref, side) {
@@ -182,14 +181,55 @@ $(document).ready(function() {
 		var p = snap.val().play;
 
 		if (snap.key === playerSlot) {
-			$('#game-icon-me').attr('src', 'assets/img/play-'+p+'.png');
-			$('#game-play-me').text(pretty[p]);
+			playerPlay = p;
 		} else {
-			$('#game-icon-you').attr('src', 'assets/img/play-'+p+'.png');
-			$('#game-play-you').text(pretty[p]);
+			opponentPlay = p;
+		}
+
+		$('#game-icon-me').attr('src', 'assets/img/play-'+playerPlay+'.png');
+		$('#game-play-me').text(pretty(playerPlay));
+
+		if (!isPlayer || (playerPlay && opponentPlay)) {
+			$('#game-icon-you').attr('src', 'assets/img/play-'+opponentPlay+'.png');
+			$('#game-play-you').text(pretty(opponentPlay));
+
+			console.log('GAME OVER', playerPlay, opponentPlay);
+			setTimeout(newGame, 3000);
+
+		} else {
+			if (opponentPlay) {
+				$('#game-icon-you').attr('src', 'assets/img/play-ready.png');
+				$('#game-play-you').text(pretty('ready'));
+
+			} else {
+				$('#game-icon-you').attr('src', 'assets/img/play-.png');
+				$('#game-play-you').text(pretty('thinking'));
+
+			}
+
 		}
 
 	});
+
+	function pretty(str) {
+		if (str === '') str = 'thinking';
+		return (prettyDict[str] || str);
+	}
+	const prettyDict = {
+		'rock': 'Rock',
+		'paper': 'Paper',
+		'scissors': 'Scissors',
+		'ready': '✔',
+		'thinking': '•••'
+	};
+
+
+	function newGame() {
+		if (dbPlayer && dbOpponent) {
+			dbPlayer.update({ play: '' });
+			dbOpponent.update({ play: '' });
+		}
+	}
 
 
 
