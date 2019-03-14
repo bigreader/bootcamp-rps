@@ -8,6 +8,7 @@ var config = {
 };
 firebase.initializeApp(config);
 var db = firebase.database();
+var dbSpectators = db.ref('spectators');
 
 var username = "";
 var isPlayer = false;
@@ -18,9 +19,21 @@ var dbOpponent;
 $(document).ready(function() {
 
 	$('#btn-signout').on('click', function() {
-		if (dbPlayer) dbPlayer.remove();
-		$('#signin').modal();
+		startSignIn();
 	});
+
+	function startSignIn() {
+		if (dbPlayer) dbPlayer.remove();
+
+		$('#modal-info-line').removeClass('text-danger').addClass('text-muted');
+		$('#modal-info-line').text('');
+		dbSpectators.once('value', data => {
+			if (data.numChildren() === 0) return;
+			$('#modal-info-line').text(data.numChildren() + ' spectating');
+		});
+		
+		$('#signin').modal();
+	}
 
 
 	$('#btn-spectate').on('click', function() {
@@ -34,36 +47,50 @@ $(document).ready(function() {
 	$('.modal form').on('submit', function(event) {
 		event.preventDefault();
 		joinAs('player');
-	})
+	});
 
 	function joinAs(role, nameOverride) {
 		isPlayer = (role === 'player');
 
 		username = $('#name-field').val().trim();
-		if (username === "") username = "Anonymous";
+		if (username === '') username = 'Anonymous';
 		if (nameOverride) username = nameOverride;
 
-		$('#signin').modal('hide');
-
-
 		if (isPlayer) {
-			$('#name-display').text("Welcome, " + username);
-			$('#game').removeClass('spectator');
+			db.ref('players').once('value', data => {
+				if (data.numChildren() > 1) {
+					$('#modal-info-line').text('Game full! Join as a spectator or wait for a player to leave.');
+					$('#modal-info-line').addClass('text-danger').removeClass('text-muted');
+					return;
+				}
 
-			dbPlayer = db.ref('/players/').push({
-				name: username,
-				play: ""
+				var slot = (data.hasChild('one'))? 'two':'one';
+				dbPlayer = db.ref('players/'+slot)
+				dbPlayer.set({
+					name: username,
+					play: ''
+				});
+				dbPlayer.onDisconnect().remove();
+
+				$('#name-display').text("Welcome, " + username);
+				$('#game').removeClass('spectator');
+
+				$('#signin').modal('hide');
 			});
-			dbPlayer.onDisconnect().remove();
-		} else {
-			$('#name-display').text("Spectating as " + username);
-			$('#game').addClass('spectator');
 
-			dbPlayer = db.ref('/spectators/').push({
+		} else {
+			dbPlayer = dbSpectators.push({
 				name: username
 			});
 			dbPlayer.onDisconnect().remove();
+
+			$('#name-display').text('Spectating as ' + username);
+			$('#game').addClass('spectator');
+
+			$('#signin').modal('hide');
+
 		}
+
 	}
 
 
@@ -75,8 +102,7 @@ $(document).ready(function() {
 		console.log('playing…', p, isPlayer);
 		if (!isPlayer) return;
 
-		dbPlayer.set({
-			name: username,
+		dbPlayer.update({
 			play: p
 		});
 
@@ -85,16 +111,16 @@ $(document).ready(function() {
 	}
 
 
-	db.ref('/players/').on('child_added', snap => {
+	db.ref('players').on('child_added', snap => {
 		var player = snap.val();
-		console.log("player added", player);
+		console.log("player added", player, snap.key);
 	});
 
 
 
 
 
-	$('#signin').modal();
+	startSignIn();
 	// joinAs('player', 'Josh');
 
 });
