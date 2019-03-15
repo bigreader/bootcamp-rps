@@ -30,6 +30,16 @@
 	margin: 0 0.5rem;
 }
 
+.new {
+	border-radius: 2px;
+	animation: flash 1s ease-out;
+}
+
+@keyframes flash {
+  0%   { background-color: #acf; }
+  100% { background-color: inherit; }
+}
+
 
 .wins-count {
 	font-weight: 600;

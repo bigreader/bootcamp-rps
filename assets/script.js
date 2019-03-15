@@ -174,6 +174,12 @@ $(document).ready(function() {
 	function status(str, icon) {
 		$('#game-status').text(str);
 		$('#game-result-icon').attr('src', 'assets/img/result-'+icon+'.png');
+		flash($('.game-output'));
+	}
+
+	function flash(element) {
+		// $(element).removeClass('new').delay(100).addClass('new');
+		// this wasn’t working well, disabling for now
 	}
 
 
@@ -289,6 +295,7 @@ $(document).ready(function() {
 	dbWins.on('child_changed', snap => {
 		var count = $('#wins-entry-'+snap.key).find('span');
 		count.text(snap.val());
+		flash(count);
 	});
 
 
@@ -307,6 +314,8 @@ $(document).ready(function() {
 		item.prepend(sender);
 
 		$('#chat-log').prepend(item);
+
+		flash(item);
 	});
 
 	dbChat.on('child_removed', snap => {
